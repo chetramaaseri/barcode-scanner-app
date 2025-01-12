@@ -1,11 +1,18 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { increment, decrement, incrementByAmount } from '../../redux/slices/counterSlice';
+import { setAuthentication, revokeAuthentication } from '../../redux/slices/sessionSlice';
 
 export default function HomeScreen() {
+  const count = useSelector((state: RootState) => state.counter.value);
+  const {isAuthenticated, authToken} = useSelector((state: RootState) => state.session);
+  const dispatch = useDispatch();
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -15,6 +22,19 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+      <ThemedView style={styles.container}>
+        <ThemedText style={styles.text}>Count: {count}</ThemedText>
+        <ThemedView style={styles.buttons}>
+          <Button title="Increment" onPress={() => dispatch(increment())} />
+          <Button title="Decrement" onPress={() => dispatch(decrement())} />
+          <Button title="Add 5" onPress={() => dispatch(incrementByAmount(5))} />
+        </ThemedView>
+          <Button title="Set" onPress={() => dispatch(setAuthentication({isAuthenticated : true, authToken : 'cheeku'}))} />
+          <Button title="Remove" onPress={() => dispatch(revokeAuthentication())} />
+      </ThemedView>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">Explore {authToken}</ThemedText>
+      </ThemedView>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
@@ -71,4 +91,19 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+
 });

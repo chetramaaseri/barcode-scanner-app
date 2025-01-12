@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, Button } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -7,7 +7,15 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { increment, decrement, incrementByAmount } from '../../redux/slices/counterSlice';
+import { setAuthentication, revokeAuthentication } from '../../redux/slices/sessionSlice';
+
 export default function TabTwoScreen() {
+  const count = useSelector((state: RootState) => state.counter.value);
+  const {isAuthenticated, authToken} = useSelector((state: RootState) => state.session);
+  const dispatch = useDispatch();
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -19,8 +27,18 @@ export default function TabTwoScreen() {
           style={styles.headerImage}
         />
       }>
+         <ThemedView style={styles.container}>
+              <ThemedText style={styles.text}>Count: {count}</ThemedText>
+              <ThemedView style={styles.buttons}>
+                <Button title="Increment" onPress={() => dispatch(increment())} />
+                <Button title="Decrement" onPress={() => dispatch(decrement())} />
+                <Button title="Add 5" onPress={() => dispatch(incrementByAmount(5))} />
+              </ThemedView>
+                <Button title="Set" onPress={() => dispatch(setAuthentication({isAuthenticated : true, authToken : 'cheeku'}))} />
+                <Button title="Remove" onPress={() => dispatch(revokeAuthentication())} />
+            </ThemedView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <ThemedText type="title">Explore {authToken}</ThemedText>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
@@ -105,5 +123,19 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
   },
 });
