@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { PaperProvider } from 'react-native-paper';
+import { PaperProvider, MD3LightTheme } from 'react-native-paper';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { registerRootComponent } from 'expo';
 import { RootState, store } from './redux/store';
@@ -15,6 +15,21 @@ import { loadSession } from './redux/slices/sessionSlice';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+
+const paperThemeLight = {
+    ...MD3LightTheme,
+    colors: {
+      ...DefaultTheme.colors,
+    },
+};
+
+const paperThemeDark = {
+    ...MD3LightTheme,
+    colors: {
+      ...DarkTheme.colors,
+    },
+};
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch();
@@ -39,6 +54,7 @@ export default function App() {
     const colorScheme = useColorScheme();
     const [loaded] = useFonts({
         SpaceMono: require('./assets/fonts/SpaceMono-Regular.ttf'),
+        UbuntuBold: require('./assets/fonts/Ubuntu-Bold.ttf'),
     });
 
     useEffect(() => {
@@ -54,7 +70,7 @@ export default function App() {
     return (
         <Provider store={store}>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-                <PaperProvider>
+                <PaperProvider theme={colorScheme === 'dark' ? paperThemeDark : paperThemeLight}>
                     <AppInitializer>
                         <ExpoRoot context={ctx} />
                         <StatusBar style="auto" />

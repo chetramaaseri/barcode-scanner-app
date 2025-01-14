@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Image, Platform, Button, View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Platform, View, Text } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -9,46 +9,63 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/store';
 import { increment, decrement, incrementByAmount } from '../../redux/slices/counterSlice';
 import { setAuthentication, revokeAuthentication } from '../../redux/slices/sessionSlice';
+import { Image } from 'expo-image';
+import LogoName from '@/components/logos/LogoName';
+import { Button, TextInput } from 'react-native-paper';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { ThemedButton } from '@/components/ThemedButton';
+import { AppScale } from '@/AppScale';
+
+interface Credentials {
+  mobile: string;
+  password: string
+}
 
 export default function SignIn() {
-  const count = useSelector((state: RootState) => state.counter.value);
-  const {isAuthenticated, authToken} = useSelector((state: RootState) => state.session);
-  const dispatch = useDispatch();
+  const [credentials, setCredentials] = useState<Credentials>({
+    mobile: '',
+    password: ''
+  });
+  const [mobile, setMobile] = useState<string>("");
   return (
-    <>
-    <ThemedView style={{flex:1, justifyContent:'center'}}>
-        <ThemedText>Text Login Page</ThemedText>
-    </ThemedView>
-    </>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerImage={<LogoName />}>
+      <ThemedView style={styles.container}>
+        <ThemedText type='heading' style={{marginBottom : AppScale(40)}}>Sign In</ThemedText>
+        <ThemedView style={styles.inputContainer}>
+          <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Mobile Number</ThemedText>
+          <ThemedTextInput
+            placeholder="Enter Mobile Number"
+            value={mobile}
+            onChangeText={(text) => setMobile(text)}
+          />
+        </ThemedView>
+        <ThemedView style={styles.inputContainer}>
+          <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Password</ThemedText>
+          <ThemedTextInput
+            placeholder="Enter Password"
+            value={mobile}
+            onChangeText={(text) => setMobile(text)}
+          />
+        </ThemedView>
+        <ThemedButton style={{ marginTop: 10}} onPress={()=>{}}>
+          Sign In
+        </ThemedButton>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  text: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
-  },
+  inputContainer: {
+    marginBottom: 15
+  }
 });
