@@ -3,17 +3,36 @@ import { useFonts } from 'expo-font';
 import { ExpoRoot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { PaperProvider } from 'react-native-paper';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { registerRootComponent } from 'expo';
-import { store } from './redux/store';
+import { RootState, store } from './redux/store';
+import { AppLoader } from './components/AppLoader';
+import { loadSession } from './redux/slices/sessionSlice';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+function AppInitializer({ children }: { children: React.ReactNode }) {
+    const dispatch = useDispatch();
+    const { isLoading, isLoaded } = useSelector((state: RootState) => state.session);
+
+    useEffect(() => {
+      const initializeApp = async () => {
+        await dispatch(loadSession());
+      };
+      initializeApp();
+    }, [dispatch]);
+  
+    if (isLoading || !isLoaded) {
+      return <AppLoader />;
+    }
+  
+    return <>{children}</>;
+  }
 
 export default function App() {
     const ctx = require.context('./app');
@@ -36,8 +55,10 @@ export default function App() {
         <Provider store={store}>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
                 <PaperProvider>
-                    <ExpoRoot context={ctx} />
-                    <StatusBar style="auto" />
+                    <AppInitializer>
+                        <ExpoRoot context={ctx} />
+                        <StatusBar style="auto" />
+                    </AppInitializer>
                 </PaperProvider>
             </ThemeProvider>
         </Provider>

@@ -7,11 +7,13 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import SecureRoute from '@/components/SecureRoute';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <SecureRoute>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -41,5 +43,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </SecureRoute>
   );
 }
