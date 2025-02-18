@@ -7,7 +7,7 @@ import { AppScale } from '@/AppScale';
 export type ThemedButtonProps = ButtonProps & {
     lightColor?: string;
     darkColor?: string;
-    buttonStyle?: string;
+    buttonStyle?: 'default' | 'hollow';
     contentStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
 };
@@ -25,6 +25,7 @@ export function ThemedButton({
     const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
     const buttonBackground = useThemeColor({ light: lightColor, dark: darkColor }, 'buttonBackground');
     const buttonTextColor = useThemeColor({ light: lightColor, dark: darkColor }, 'buttonText');
+    const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
     return (
         <Button
             {...otherProps}
@@ -41,8 +42,8 @@ export function ThemedButton({
                 style
             ]}
             mode={mode}
-            buttonColor={buttonBackground}
-            textColor={buttonTextColor}
+            buttonColor={buttonStyle !== 'hollow'? buttonBackground : 'transparent'}
+            textColor={buttonStyle !== 'hollow'? buttonTextColor : textColor}
             rippleColor={backgroundColor}
         />
     );

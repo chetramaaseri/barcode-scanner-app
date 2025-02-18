@@ -18,6 +18,7 @@ import { Button, TextInput } from 'react-native-paper';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedButton } from '@/components/ThemedButton';
 import { AppScale } from '@/AppScale';
+import { Link } from 'expo-router';
 
 interface Credentials {
   mobile: string;
@@ -35,7 +36,7 @@ export default function SignIn() {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<LogoName />}>
       <ThemedView style={styles.container}>
-        <ThemedText type='heading' style={{marginBottom : AppScale(40)}}>Sign In</ThemedText>
+        <ThemedText type='heading' style={{marginBottom : AppScale(40)}}>Forgot Password</ThemedText>
         <ThemedView style={styles.inputContainer}>
           <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Mobile Number</ThemedText>
           <ThemedTextInput
@@ -44,16 +45,8 @@ export default function SignIn() {
             onChangeText={(text) => setMobile(text)}
           />
         </ThemedView>
-        <ThemedView style={styles.inputContainer}>
-          <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Password</ThemedText>
-          <ThemedTextInput
-            placeholder="Enter Password"
-            value={mobile}
-            onChangeText={(text) => setMobile(text)}
-          />
-        </ThemedView>
         <ThemedButton style={{ marginTop: 10}} onPress={()=>{}}>
-          Sign In
+          Send OTP
         </ThemedButton>
       </ThemedView>
     </ParallaxScrollView>
