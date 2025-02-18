@@ -1,11 +1,12 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { AppScale } from '@/AppScale';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 'default' | 'heading' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
 };
 
 export function ThemedText({
@@ -22,6 +23,7 @@ export function ThemedText({
       style={[
         { color },
         type === 'default' ? styles.default : undefined,
+        type === 'heading' ? styles.heading : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
@@ -35,26 +37,32 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: 16,
+    fontSize: AppScale(16),
     lineHeight: 24,
   },
   defaultSemiBold: {
-    fontSize: 16,
+    fontSize: AppScale(16),
     lineHeight: 24,
     fontWeight: '600',
   },
+  heading: {
+    fontSize: AppScale(64),
+    fontFamily : 'UbuntuBold',
+    lineHeight: 60,
+  },
   title: {
-    fontSize: 32,
+    fontSize: AppScale(32),
     fontWeight: 'bold',
     lineHeight: 32,
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: AppScale(20),
     fontWeight: 'bold',
   },
   link: {
     lineHeight: 30,
-    fontSize: 16,
+    fontSize: AppScale(16),
     color: '#0a7ea4',
+    textDecorationLine : 'underline'
   },
 });
