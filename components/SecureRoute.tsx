@@ -8,7 +8,7 @@ type SecureRouteProps = {
 export default function SecureRoute({ children } : SecureRouteProps) {
     const { isAuthenticated, isLoaded } = useSelector((state: RootState) => state.session);
     if (isLoaded && !isAuthenticated) {
-      return <Redirect href="/auth/sign-in" />;
+      return <Redirect href="/auth" />;
     }
     return isAuthenticated ? <>{children}</> : null;
 }
