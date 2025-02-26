@@ -12,11 +12,6 @@ import { AppScale } from '@/AppScale';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { login } from '@/api/Auth';
 
-interface Credentials {
-  mobile: string;
-  password: string
-}
-
 export default function SignIn() {
   const dispatch = useDispatch();
   const [mobile, setMobile] = useState<string>("");
@@ -28,7 +23,7 @@ export default function SignIn() {
     if(password.length < 1){
       return alert('Please enter a valid password');
     }
-    // dispatch(setIsLoading(true));
+    dispatch(setIsLoading(true));
     try {
       const { data : { token } } = await login(mobile, password);
       await AsyncStorage.setItem('authToken',token);
@@ -50,7 +45,7 @@ export default function SignIn() {
             placeholder="Enter Mobile Number"
             value={mobile}
             keyboardType="numeric"
-            onChangeText={(text) => setMobile(text)}
+            onChangeText={setMobile}
           />
         </ThemedView>
         <ThemedView style={styles.inputContainer}>
@@ -59,7 +54,7 @@ export default function SignIn() {
             placeholder="Enter Password"
             value={password}
             secureTextEntry={true}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={setPassword}
           />
         </ThemedView>
         <ThemedButton style={{ marginTop: 10}} onPress={mobileAuthLogin}>
