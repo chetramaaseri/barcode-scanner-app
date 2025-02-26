@@ -10,6 +10,7 @@ import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedButton } from '@/components/ThemedButton';
 import { AppScale } from '@/AppScale';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { login } from '@/api/Auth';
 
 interface Credentials {
   mobile: string;
@@ -18,21 +19,23 @@ interface Credentials {
 
 export default function SignIn() {
   const dispatch = useDispatch();
-  const [credentials, setCredentials] = useState<Credentials>({
-    mobile: '',
-    password: ''
-  });
+  const [mobile, setMobile] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const mobileAuthLogin = async () => {
-    if(credentials.mobile.length < 10){
+    if(mobile.length < 10){
       return alert('Please enter a valid mobile number');
     }
-    if(credentials.password.length < 8){
+    if(password.length < 1){
       return alert('Please enter a valid password');
     }
-    dispatch(setIsLoading(true));
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    await AsyncStorage.setItem('authToken','loginToken');
-    dispatch(setAuthentication({ isAuthenticated: true, authToken: 'loginToken' }));
+    // dispatch(setIsLoading(true));
+    try {
+      const { data : { token } } = await login(mobile, password);
+      await AsyncStorage.setItem('authToken',token);
+      dispatch(setAuthentication({ isAuthenticated: true, authToken: token }));
+    } catch (error) {
+      alert((error as Error).message);
+    }
     dispatch(setIsLoading(false));
   }
   return (
@@ -45,18 +48,18 @@ export default function SignIn() {
           <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Mobile Number</ThemedText>
           <ThemedTextInput
             placeholder="Enter Mobile Number"
-            value={credentials.mobile}
+            value={mobile}
             keyboardType="numeric"
-            onChangeText={(text) => setCredentials({...credentials, mobile: text})}
+            onChangeText={(text) => setMobile(text)}
           />
         </ThemedView>
         <ThemedView style={styles.inputContainer}>
           <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Password</ThemedText>
           <ThemedTextInput
             placeholder="Enter Password"
-            value={credentials.password}
+            value={password}
             secureTextEntry={true}
-            onChangeText={(text) => setCredentials({...credentials, password: text})}
+            onChangeText={(text) => setPassword(text)}
           />
         </ThemedView>
         <ThemedButton style={{ marginTop: 10}} onPress={mobileAuthLogin}>
