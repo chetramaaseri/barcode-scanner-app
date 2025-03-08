@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "inventory-app",
-    "slug": "inventory-app",
+    "name": "barcode-scanner-app",
+    "slug": "barcode-scanner-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.chetramaaseri.barcodescannerapp"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +37,28 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7c599439-b5de-4280-9194-2307540277b8"
+      }
+    },
+    "owner": "chetramaaseri"
   }
 }

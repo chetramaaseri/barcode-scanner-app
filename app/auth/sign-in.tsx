@@ -4,35 +4,34 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useDispatch } from 'react-redux';
-import { setAuthentication, setIsLoading } from '../../redux/slices/sessionSlice';
+import { setAuthentication, setIsLoading, setUser } from '../../redux/slices/sessionSlice';
 import LogoName from '@/components/logos/LogoName';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedButton } from '@/components/ThemedButton';
 import { AppScale } from '@/AppScale';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface Credentials {
-  mobile: string;
-  password: string
-}
+import { login } from '@/api/Auth';
 
 export default function SignIn() {
   const dispatch = useDispatch();
-  const [credentials, setCredentials] = useState<Credentials>({
-    mobile: '',
-    password: ''
-  });
+  const [mobile, setMobile] = useState<string>("8528965989");
+  const [password, setPassword] = useState<string>("12345678");
   const mobileAuthLogin = async () => {
-    if(credentials.mobile.length < 10){
+    if(mobile.length < 10){
       return alert('Please enter a valid mobile number');
     }
-    if(credentials.password.length < 8){
+    if(password.length < 1){
       return alert('Please enter a valid password');
     }
     dispatch(setIsLoading(true));
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    await AsyncStorage.setItem('authToken','loginToken');
-    dispatch(setAuthentication({ isAuthenticated: true, authToken: 'loginToken' }));
+    try {
+      const { data } = await login(mobile, password);
+      await AsyncStorage.setItem('authToken',data.token);
+      dispatch(setUser({ user_id : data.user_id, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}))
+      dispatch(setAuthentication({ isAuthenticated: true, authToken: data.token }));
+    } catch (error) {
+      alert((error as Error).message);
+    }
     dispatch(setIsLoading(false));
   }
   return (
@@ -45,18 +44,18 @@ export default function SignIn() {
           <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Mobile Number</ThemedText>
           <ThemedTextInput
             placeholder="Enter Mobile Number"
-            value={credentials.mobile}
+            value={mobile}
             keyboardType="numeric"
-            onChangeText={(text) => setCredentials({...credentials, mobile: text})}
+            onChangeText={setMobile}
           />
         </ThemedView>
         <ThemedView style={styles.inputContainer}>
           <ThemedText style={{ marginBottom: 5, fontWeight: 'bold' }} >Password</ThemedText>
           <ThemedTextInput
             placeholder="Enter Password"
-            value={credentials.password}
+            value={password}
             secureTextEntry={true}
-            onChangeText={(text) => setCredentials({...credentials, password: text})}
+            onChangeText={setPassword}
           />
         </ThemedView>
         <ThemedButton style={{ marginTop: 10}} onPress={mobileAuthLogin}>

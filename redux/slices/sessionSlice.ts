@@ -2,11 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch } from '../store';
 
+
+interface User {
+  user_id : 1;
+  username : string;
+  mobile: string | number;
+  email : string;
+  role : string;
+  scope: object; 
+  created_at : string,
+}
 interface SessionState {
   isLoaded: boolean;
   isLoading: boolean;
   isAuthenticated: boolean;
   authToken: string;
+  user: User | null;
 }
 
 interface AuthState {
@@ -19,6 +30,7 @@ const initialState: SessionState = {
   isLoading: true,
   isAuthenticated: false,
   authToken: '',
+  user : null
 };
 
 const sessionSlice = createSlice({
@@ -33,6 +45,9 @@ const sessionSlice = createSlice({
       state.isAuthenticated = false;
       state.authToken = '';
     },
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = state.user ? { ...state.user , ...action.payload }: action.payload;
+    },
     setIsLoaded: (state, action: PayloadAction<boolean>) => {
       state.isLoaded = action.payload;
       if(action.payload){
@@ -45,7 +60,7 @@ const sessionSlice = createSlice({
   },
 });
 
-export const { setAuthentication, revokeAuthentication, setIsLoaded, setIsLoading } = sessionSlice.actions;
+export const { setAuthentication, revokeAuthentication, setUser, setIsLoaded, setIsLoading } = sessionSlice.actions;
 
 export const loadSession = () => async (dispatch: AppDispatch) => {
   try {

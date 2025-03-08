@@ -1,31 +1,32 @@
-// This file is a fallback for using MaterialIcons on Android and web.
-
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { SymbolWeight } from 'expo-symbols';
 import React from 'react';
-import { OpaqueColorValue, StyleProp, ViewStyle } from 'react-native';
+import { OpaqueColorValue, StyleProp, TextStyle } from 'react-native';
 
-// Add your SFSymbol to MaterialIcons mappings here.
-const MAPPING = {
-  // See MaterialIcons here: https://icons.expo.fyi
-  // See SF Symbols in the SF Symbols app on Mac.
-  'house.fill': 'home',
-  'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
-} as Partial<
-  Record<
-    import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
->;
+// Define mappings for different icon sets
+const ICON_MAPPING = {
+  // MaterialIcons mappings
+  'house.fill': { lib: MaterialIcons, name: 'home' },
+  'paperplane.fill': { lib: MaterialIcons, name: 'send' },
+  'profile.fill': { lib: MaterialIcons, name: 'person' },
+  'chevron.left.forwardslash.chevron.right': { lib: MaterialIcons, name: 'code' },
+  'chevron.right': { lib: MaterialIcons, name: 'chevron-right' },
 
-export type IconSymbolName = keyof typeof MAPPING;
+  // AntDesign mappings
+  'user': { lib: AntDesign, name: 'user' },
+  'staro': { lib: AntDesign, name: 'staro' },
+
+  // FontAwesome mappings
+  'facebook': { lib: FontAwesome, name: 'facebook' },
+  'twitter': { lib: FontAwesome, name: 'twitter' },
+} as const;
+
+export type IconSymbolName = keyof typeof ICON_MAPPING;
 
 /**
- * An icon component that uses native SFSymbols on iOS, and MaterialIcons on Android and web. This ensures a consistent look across platforms, and optimal resource usage.
- *
- * Icon `name`s are based on SFSymbols and require manual mapping to MaterialIcons.
+ * An icon component that supports multiple libraries: MaterialIcons, AntDesign, FontAwesome, etc.
  */
 export function IconSymbol({
   name,
@@ -36,8 +37,23 @@ export function IconSymbol({
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const iconData = ICON_MAPPING[name];
+
+  if (!iconData) {
+    console.warn(`Icon "${name}" not found in mappings.`);
+    return null;
+  }
+
+  // Explicitly type as "any" to avoid TypeScript issues
+  const IconComponent = iconData.lib as React.ComponentType<{
+    name: string;
+    size?: number;
+    color?: string | OpaqueColorValue;
+    style?: StyleProp<TextStyle>;
+  }>;
+
+  return <IconComponent name={iconData.name} size={size} color={color} style={style} />;
 }

@@ -9,7 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { PaperProvider, MD3LightTheme } from 'react-native-paper';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { registerRootComponent } from 'expo';
-import { RootState, store } from './redux/store';
+import { AppDispatch, RootState, store } from './redux/store';
 import { AppLoader } from './components/AppLoader';
 import { loadSession } from './redux/slices/sessionSlice';
 
@@ -20,34 +20,34 @@ SplashScreen.preventAutoHideAsync();
 const paperThemeLight = {
     ...MD3LightTheme,
     colors: {
-      ...DefaultTheme.colors,
+        ...DefaultTheme.colors,
     },
 };
 
 const paperThemeDark = {
     ...MD3LightTheme,
     colors: {
-      ...DarkTheme.colors,
+        ...DarkTheme.colors,
     },
 };
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { isLoading, isLoaded } = useSelector((state: RootState) => state.session);
 
     useEffect(() => {
-      const initializeApp = async () => {
-        await dispatch(loadSession());
-      };
-      initializeApp();
+        const initializeApp = async () => {
+            dispatch(loadSession());
+        };
+        initializeApp();
     }, [dispatch]);
-  
+
     if (isLoading || !isLoaded) {
-      return <AppLoader />;
+        return <AppLoader />;
     }
-  
+
     return <>{children}</>;
-  }
+}
 
 export default function App() {
     const ctx = require.context('./app');
