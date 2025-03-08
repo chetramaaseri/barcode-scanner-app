@@ -4,7 +4,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useDispatch } from 'react-redux';
-import { setAuthentication, setIsLoading } from '../../redux/slices/sessionSlice';
+import { setAuthentication, setIsLoading, setUser } from '../../redux/slices/sessionSlice';
 import LogoName from '@/components/logos/LogoName';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedButton } from '@/components/ThemedButton';
@@ -14,8 +14,8 @@ import { login } from '@/api/Auth';
 
 export default function SignIn() {
   const dispatch = useDispatch();
-  const [mobile, setMobile] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [mobile, setMobile] = useState<string>("8528965989");
+  const [password, setPassword] = useState<string>("12345678");
   const mobileAuthLogin = async () => {
     if(mobile.length < 10){
       return alert('Please enter a valid mobile number');
@@ -25,9 +25,10 @@ export default function SignIn() {
     }
     dispatch(setIsLoading(true));
     try {
-      const { data : { token } } = await login(mobile, password);
-      await AsyncStorage.setItem('authToken',token);
-      dispatch(setAuthentication({ isAuthenticated: true, authToken: token }));
+      const { data } = await login(mobile, password);
+      await AsyncStorage.setItem('authToken',data.token);
+      dispatch(setUser({ user_id : data.user_id, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}))
+      dispatch(setAuthentication({ isAuthenticated: true, authToken: data.token }));
     } catch (error) {
       alert((error as Error).message);
     }

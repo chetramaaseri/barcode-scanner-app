@@ -13,6 +13,8 @@ interface ApiResponse {
 export const login = async (mobile: string, password: string): Promise<ApiResponse> => {
     try {
         const response = await axios.post<ApiResponse>(`${API_URL}/auth/login.php`,{ mobile, password });
+        console.log(response.data);
+        
         return response.data;
     } catch (error: unknown) {
         if (error instanceof AxiosError && error.response?.data?.error?.message) {
