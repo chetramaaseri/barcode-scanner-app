@@ -36,8 +36,13 @@ export default function HomeScreen() {
   const getData = async () => {
     if (user && user.user_id) {
       try {
-        const { data } = await getTotalScannedRange(user.user_id, getTodayDateRange());
-        dispatch(setTotalScanned(data.total_scanned));
+        const response = await getTotalScannedRange(user.user_id, getTodayDateRange());
+        if(response.data){
+          const { data } = response;
+          dispatch(setTotalScanned(data.total_scanned));
+        }else{
+          ToastAndroid.show(response.error?.message ?? 'An unknown error occurred', ToastAndroid.SHORT);
+        }
       } catch (error) {
         ToastAndroid.show('An unknown error occurred', ToastAndroid.LONG);
       }
@@ -68,7 +73,11 @@ export default function HomeScreen() {
       dispatch(setIsLoading(true));
       if (user && user.user_id) {
         const response = await updateScannedCode(user.user_id, data);
-        dispatch(setTotalScanned(response.data.total_scanned));
+        if(response.data){
+          dispatch(setTotalScanned(response.data.total_scanned));
+        }else if(response.error?.message){
+          ToastAndroid.show(response.error.message,ToastAndroid.SHORT);
+        }
       }
       setScanned(false);
       setScannedData(null);

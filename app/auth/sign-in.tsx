@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ToastAndroid } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -25,10 +25,15 @@ export default function SignIn() {
     }
     dispatch(setIsLoading(true));
     try {
-      const { data } = await login(mobile, password);
-      await AsyncStorage.setItem('authToken',data.token);
-      dispatch(setUser({ user_id : data.user_id, name : data.name, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}))
-      dispatch(setAuthentication({ isAuthenticated: true, authToken: data.token }));
+      const response = await login(mobile, password);
+      if(response.data){
+        const { data } = response;
+        await AsyncStorage.setItem('authToken',data.token);
+        dispatch(setUser({ user_id : data.user_id, name : data.name, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}))
+        dispatch(setAuthentication({ isAuthenticated: true, authToken: data.token }));
+      }else if(response.error?.message){
+        ToastAndroid.show(response.error.message,ToastAndroid.SHORT);
+      }
     } catch (error) {
       alert((error as Error).message);
     }
