@@ -39,10 +39,7 @@ export const getTodayDateRange = (): [string, string] => {
 
 export const getTotalScannedRange = async (user_id: number, date_range : DateRange): Promise<ApiResponse> => {
     try {
-        console.log({ user_id, date_range });
         const response = await axios.post<ApiResponse>(`${API_URL}/scanning/get_total_scanned_items.php`,{ user_id, date_range });
-        console.log(response.data);
-        
         return response.data;
     } catch (error: unknown) {
         if (error instanceof AxiosError && error.response?.data?.error?.message) {
