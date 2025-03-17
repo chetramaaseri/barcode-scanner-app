@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { AppScale } from '@/AppScale';
+import { ThemedButton } from '@/components/ThemedButton';
 
 export default function HomeScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -25,7 +26,7 @@ export default function HomeScreen() {
           :
             <>
               <ThemedText style={{marginBottom : AppScale(20)}}>We need your permission to show the camera</ThemedText>
-              <Button onPress={requestPermission} title="grant permission" />
+              <ThemedButton onPress={requestPermission}>Grant Permission</ThemedButton>
             </>
       }
       {scanned && (
