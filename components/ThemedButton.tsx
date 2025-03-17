@@ -51,7 +51,7 @@ export function ThemedButton({
 
 const contentStyles = StyleSheet.create({
     default: {
-        paddingVertical: AppScale(5),
+        paddingVertical: AppScale(3),
     }
 });
 const labelStyles = StyleSheet.create({

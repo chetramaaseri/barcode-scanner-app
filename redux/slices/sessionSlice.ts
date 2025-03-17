@@ -6,6 +6,7 @@ import { AppDispatch } from '../store';
 interface User {
   user_id : 1;
   username : string;
+  name : string;
   mobile: string | number;
   email : string;
   role : string;
