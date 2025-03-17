@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch } from '../store';
+import { verifyToken } from '@/api/Auth';
 
 
 interface User {
@@ -11,7 +12,7 @@ interface User {
   email : string;
   role : string;
   scope: object; 
-  created_at : string,
+  created_at : string;
 }
 interface SessionState {
   isLoaded: boolean;
@@ -19,6 +20,7 @@ interface SessionState {
   isAuthenticated: boolean;
   authToken: string;
   user: User | null;
+  totalScanned : number;
 }
 
 interface AuthState {
@@ -31,7 +33,8 @@ const initialState: SessionState = {
   isLoading: true,
   isAuthenticated: false,
   authToken: '',
-  user : null
+  user : null,
+  totalScanned : 0
 };
 
 const sessionSlice = createSlice({
@@ -49,6 +52,9 @@ const sessionSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = state.user ? { ...state.user , ...action.payload }: action.payload;
     },
+    setTotalScanned: (state, action: PayloadAction<number>) => {
+      state.totalScanned = action.payload;
+    },
     setIsLoaded: (state, action: PayloadAction<boolean>) => {
       state.isLoaded = action.payload;
       if(action.payload){
@@ -61,13 +67,15 @@ const sessionSlice = createSlice({
   },
 });
 
-export const { setAuthentication, revokeAuthentication, setUser, setIsLoaded, setIsLoading } = sessionSlice.actions;
+export const { setAuthentication, revokeAuthentication, setUser, setTotalScanned, setIsLoaded, setIsLoading } = sessionSlice.actions;
 
 export const loadSession = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(setIsLoading(true));
     const token = await AsyncStorage.getItem('authToken');
     if (token) {
+      const { data } = await verifyToken(token);
+      dispatch(setUser({ user_id : data.user_id, name : data.name, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}));
       dispatch(setAuthentication({ isAuthenticated: true, authToken: token }));
     } else {
       dispatch(setAuthentication({ isAuthenticated: false, authToken: '' }));
