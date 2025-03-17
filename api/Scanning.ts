@@ -10,11 +10,9 @@ interface ApiResponse {
     data?: any;
 }
 
-export const login = async (mobile: string, password: string): Promise<ApiResponse> => {
+export const updateScannedCode = async (user_id: number, barcode : number | string): Promise<ApiResponse> => {
     try {
-        const response = await axios.post<ApiResponse>(`${API_URL}/auth/login.php`,{ mobile, password });
-        console.log(response.data);
-        
+        const response = await axios.post<ApiResponse>(`${API_URL}/scanning/update_scanned_barcode.php`,{ user_id, barcode });
         return response.data;
     } catch (error: unknown) {
         if (error instanceof AxiosError && error.response?.data?.error?.message) {
@@ -27,12 +25,24 @@ export const login = async (mobile: string, password: string): Promise<ApiRespon
     }
 };
 
-export const verifyToken = async (token : string): Promise<ApiResponse> => {
-    console.log("verify me");
-    
+type DateRange = [string, string];
+
+export const getTodayDateRange = (): [string, string] => {
+    const now = new Date();
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = now;
+    const startDate = startOfDay.toISOString();
+    const endDate = endOfDay.toISOString();
+    return [startDate, endDate];
+};
+
+export const getTotalScannedRange = async (user_id: number, date_range : DateRange): Promise<ApiResponse> => {
     try {
-        const response = await axios.post<ApiResponse>(`${API_URL}/auth/verify_token.php`,{ token });
+        console.log({ user_id, date_range });
+        const response = await axios.post<ApiResponse>(`${API_URL}/scanning/get_total_scanned_items.php`,{ user_id, date_range });
         console.log(response.data);
+        
         return response.data;
     } catch (error: unknown) {
         if (error instanceof AxiosError && error.response?.data?.error?.message) {

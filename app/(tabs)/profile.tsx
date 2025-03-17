@@ -3,14 +3,27 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { revokeAuthentication } from '../../redux/slices/sessionSlice';
+import { revokeAuthentication, setTotalScanned } from '../../redux/slices/sessionSlice';
 import { ThemedButton } from '@/components/ThemedButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { getTodayDateRange, getTotalScannedRange } from '@/api/Scanning';
 
 export default function UserProfileScreen() {
-  const { user } = useSelector((state: RootState) => state.session);
+  const { user, totalScanned } = useSelector((state: RootState) => state.session);
   const dispatch = useDispatch();
 
+  const getData = async ()=> {
+    if(user && user.user_id){
+      const { data } = await getTotalScannedRange(user.user_id, getTodayDateRange());
+      dispatch(setTotalScanned(data.total_scanned));
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, [])
+  
   const logout = async () => {
     await AsyncStorage.removeItem('authToken');
     dispatch(revokeAuthentication());
@@ -37,13 +50,13 @@ export default function UserProfileScreen() {
         <ThemedText type="defaultSemiBold">Email</ThemedText>
         <ThemedText style={styles.userDetail}>{user?.email}</ThemedText>
       </ThemedView>
-      <ThemedView style={{marginBottom : 10}}>
+      {/* <ThemedView style={{marginBottom : 10}}>
         <ThemedText type="defaultSemiBold">Role</ThemedText>
         <ThemedText style={styles.userDetail}>{user?.role}</ThemedText>
-      </ThemedView>
+      </ThemedView> */}
       <ThemedView style={{marginBottom : 10}}>
         <ThemedText type="defaultSemiBold">Total Scanned</ThemedText>
-        <ThemedText style={styles.userDetail}>2500</ThemedText>
+        <ThemedText style={styles.userDetail}>{totalScanned}</ThemedText>
       </ThemedView>
       <ThemedButton style={{ marginTop: 10}} onPress={logout}>
         Logout
