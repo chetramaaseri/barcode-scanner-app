@@ -1,4 +1,4 @@
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, ToastAndroid } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,8 +15,12 @@ export default function UserProfileScreen() {
 
   const getData = async ()=> {
     if(user && user.user_id){
-      const { data } = await getTotalScannedRange(user.user_id, getTodayDateRange());
-      dispatch(setTotalScanned(data.total_scanned));
+      const response = await getTotalScannedRange(user.user_id, getTodayDateRange());
+      if(response.data){
+        dispatch(setTotalScanned(response.data.total_scanned));
+      }else if(response.error?.message){
+        ToastAndroid.show(response.error.message,ToastAndroid.SHORT);
+      }
     }
   }
 

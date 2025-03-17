@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch } from '../store';
 import { verifyToken } from '@/api/Auth';
+import { ToastAndroid } from 'react-native';
 
 
 interface User {
@@ -74,9 +75,14 @@ export const loadSession = () => async (dispatch: AppDispatch) => {
     dispatch(setIsLoading(true));
     const token = await AsyncStorage.getItem('authToken');
     if (token) {
-      const { data } = await verifyToken(token);
-      dispatch(setUser({ user_id : data.user_id, name : data.name, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}));
-      dispatch(setAuthentication({ isAuthenticated: true, authToken: token }));
+      const response = await verifyToken(token);
+      if(response.data){
+        const { data } = response;
+        dispatch(setUser({ user_id : data.user_id, name : data.name, username : data.username,  mobile : data.mobile, email : data.email, role : data.role, scope : data.scope,  created_at : data.created_at}));
+        dispatch(setAuthentication({ isAuthenticated: true, authToken: token }));
+      }else{
+        ToastAndroid.show(response?.error?.message ?? 'An unknown error occurred',ToastAndroid.SHORT);
+      }
     } else {
       dispatch(setAuthentication({ isAuthenticated: false, authToken: '' }));
     }
